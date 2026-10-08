@@ -83,6 +83,18 @@ to teach someone that the machine is arbitrary.
 interchangeable — `for...in`, `for...of`, a C-style counter — the check accepts
 all of them rather than the one the lesson happened to demonstrate.
 
+**The sandbox shadows the browser.** Learner code runs through `new Function`,
+so every name it does not shadow resolves to the real `window`. That is not
+theoretical: `print` *is* `window.print`, so a beginner typing `print('hi')` —
+the natural guess coming from Python — opened the browser's print dialog, and
+the same route reached `localStorage`, where progress lives. The blocked names
+are listed in `SANDBOX_BLOCKED` and passed as parameters, which makes each one
+`undefined` inside a lesson. `print` is the exception: it throws a sentence
+naming `console.log`, because reaching for it is a sensible guess that deserves
+an answer rather than silence. This is a blocklist, so it stops the mistakes a
+learner makes, not a determined attacker — real isolation would mean an iframe
+or a Worker, which the loop guard would have to become async for.
+
 **It works on a phone.** Someone learning to code is as likely to be on a
 bus as at a desk. The page declares a viewport and reflows the topbar below
 640px, so the line, the editor and the run button are all reachable on a small
@@ -277,6 +289,7 @@ Every browser suite drives the real page — content is read out of the live
 |---|---|
 | `guard.test.js` | 48 assertions across 20 sandbox cases against the real loop guard — infinite loops stopped, ordinary loops untouched, `for...of` and strings containing `while` left alone — plus 8 on what `instrument()` rewrites and 2 that the stop message quotes the real limits. No browser, ~1s |
 | `ids.test.js` | Stage ids are unique, well formed, and none vanished without a `MAPS` entry |
+| `sandbox-globals.test.js` | Browser globals stay out of learner code, `print()` teaches, the save is unreachable, and the lessons still run |
 | `content.test.js` | Content audit across all 95 stops; every solution passes its own check |
 | `help-ladder.test.js` | Escalation thresholds, star costs, escape hatch |
 | `progress-ui.test.js` | Tick strip, "not solved yet" panel |

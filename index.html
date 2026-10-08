@@ -164,6 +164,7 @@ function friendly(error){
       ? 'Your loop is still going after '+(MAX_MS/1000)+' seconds. Something in the condition never becomes false.'
       : 'Your loop ran '+MAX_TICKS.toLocaleString('en-US')+' times and never stopped. Check that the thing your condition tests actually changes inside the loop.';
   }
+  if(error&&error.__taught) return error.message;
   var message=String((error&&error.message)||error);
   if(error instanceof ReferenceError){
     var match=message.match(/^(\w+) is not defined/);
@@ -173,15 +174,45 @@ function friendly(error){
   if(error instanceof TypeError)return message+' — usually this means a value is not the kind of thing you tried to use it as.';
   return (error&&error.name?error.name+': ':'')+message;
 }
+// Learner code runs through new Function, so every name it uses that we do not
+// shadow resolves all the way up to the real window. That is how a beginner
+// typing print('hi') — the natural guess coming from Python — ends up opening
+// the browser's print dialog instead of being told JavaScript spells it
+// console.log. The same hole reaches alert, document and localStorage, which is
+// where this page keeps everybody's progress.
+//
+// Naming them as parameters shadows them: inside the sandbox each one is
+// undefined, whatever window happens to hold. This is a blocklist, so it is
+// only as complete as the list — it stops the mistakes a learner actually
+// makes, not a determined attacker, who still has Object, constructor and the
+// rest of the language. Real isolation would mean an iframe or a Worker.
+var SANDBOX_BLOCKED = [
+  'print','alert','confirm','prompt','open','close',
+  'window','document','globalThis','self','parent','top','frames',
+  'localStorage','sessionStorage','indexedDB','caches',
+  'fetch','XMLHttpRequest','WebSocket','navigator','location','history',
+  'setTimeout','setInterval','requestAnimationFrame',
+  'state','ZONES','save','serializeProgress'
+];
+
 function runCode(src){
   var logs=[];
   function push(args){ if(logs.length<400) logs.push(Array.prototype.map.call(args,formatValue).join(' ')); }
   var consoleShim={log:function(){push(arguments);},info:function(){push(arguments);},
             warn:function(){push(arguments);},error:function(){push(arguments);}};
+  // print is the one blocked name worth answering rather than just removing.
+  // Reaching for it is a sensible guess, not a typo, so it earns a real lesson.
+  function printShim(){
+    var error=new Error('JavaScript does not have print(). Use console.log() instead — that is what puts a line on the board.');
+    error.__taught=true;        // friendly() prints a taught message as-is, with no "Error:" in front
+    throw error;
+  }
   var runError=null;
   try{
-    var sandboxedFunction=new Function('console','__tick','"use strict";\n'+instrument(src));
-    sandboxedFunction(consoleShim,makeTick());
+    var names=['console','__tick','print'].concat(SANDBOX_BLOCKED.filter(function(name){ return name!=='print'; }));
+    var values=[consoleShim,makeTick(),printShim];   // every blocked name after these is undefined
+    var sandboxedFunction=Function.apply(null,names.concat('"use strict";\n'+instrument(src)));
+    sandboxedFunction.apply(null,values);
   }catch(caughtError){ runError=friendly(caughtError); }
   return {logs:logs,err:runError};
 }

@@ -7,7 +7,7 @@
   "scripts": {
     "start": "python3 server.py",
     "test": "node tests/guard.test.js && npm run test:browser",
-    "test:browser": "node tests/ids.test.js && node tests/content.test.js && node tests/help-ladder.test.js && node tests/progress-ui.test.js && node tests/test-mode.test.js && node tests/boss-feedback.test.js && node tests/boss-login.test.js && node tests/dev-mode-no-save.test.js && node tests/player-name.test.js && node tests/save-file.test.js && node tests/server-store.test.js",
+    "test:browser": "node tests/ids.test.js && node tests/sandbox-globals.test.js && node tests/content.test.js && node tests/help-ladder.test.js && node tests/progress-ui.test.js && node tests/test-mode.test.js && node tests/boss-feedback.test.js && node tests/boss-login.test.js && node tests/dev-mode-no-save.test.js && node tests/player-name.test.js && node tests/save-file.test.js && node tests/server-store.test.js",
     "test:guard": "node tests/guard.test.js",
     "setup": "npm install && npx playwright install chromium"
   },

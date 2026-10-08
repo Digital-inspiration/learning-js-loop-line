@@ -1,0 +1,45 @@
+# Player progress — this is personal state, not source. It carries real names.
+# server.py writes one file per player next to index.html on the machine it
+# runs on, so the per-player pattern has to be covered too, not just the
+# original single file.
+progress.json
+progress.json.tmp
+progress-*.json
+progress-*.json.tmp
+loopline-progress-*.json
+
+# Node / Playwright
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-error.log*
+.npm/
+playwright-report/
+test-results/
+/blob-report/
+.playwright/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Test output
+shot-*.png
+*.local.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS cruft
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini

@@ -31,6 +31,19 @@ async function waitForFile(p, timeoutMs = 5000) {
   }
   return false;
 }
+// The server writes the file and THEN logs the line, and that line still has to
+// cross a pipe into this process's event loop. Checking srvOut the moment the
+// file appears is a race that loses about one run in eight, so wait for the
+// text the same way we wait for the file.
+let srvOut = '';                 // module scope: waitForLog below reads it
+async function waitForLog(re, timeoutMs = 5000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (re.test(srvOut)) return true;
+    await wait(50);
+  }
+  return false;
+}
 // Same idea for on-page text after a reload: connectFileStore's fetch has to
 // resolve and re-render before the UI reflects what is on disk.
 async function waitForText(locator, regex, timeoutMs = 5000) {
@@ -60,7 +73,7 @@ async function waitForText(locator, regex, timeoutMs = 5000) {
   // -u: unbuffered, so the banner reaches this pipe on a machine without
   // PYTHONUNBUFFERED set. server.py flushes it too; belt and braces.
   const srv = spawn('python3', ['-u', 'server.py', '0'], { cwd: dir });
-  let srvOut = '';
+  srvOut = '';
   srv.stdout.on('data', d => { srvOut += d.toString(); });
   srv.stderr.on('data', d => { srvOut += d.toString(); });
   let browser = null;
@@ -101,7 +114,7 @@ async function waitForText(locator, regex, timeoutMs = 5000) {
   check('it holds the win', disk.done && disk.done['z0-say-something'] === true, JSON.stringify(disk.done || {}));
   check('it is readable JSON a human could open',
     fs.existsSync(STORE) && fs.readFileSync(STORE, 'utf8').includes('\n  "'), 'indented');
-  check('server logged the save, naming the file', /saved progress-tester\.json/.test(srvOut), srvOut.trim().split('\n').pop());
+  check('server logged the save, naming the file', await waitForLog(/saved progress-tester\.json/), srvOut.trim().split('\n').pop());
 
   console.log('\n== a wiped browser recovers from the file ==');
   await page.evaluate(() => localStorage.clear());
@@ -158,7 +171,7 @@ async function waitForText(locator, regex, timeoutMs = 5000) {
   await page.reload();
   await page.waitForTimeout(800);
   check('page still loads with a broken store', (await page.locator('.linemap').isVisible()));
-  check('server reported the bad file, by name', /could not read progress-tester\.json/.test(srvOut),
+  check('server reported the bad file, by name', await waitForLog(/could not read progress-tester\.json/),
     'logged');
   check('Roli\'s own file is unaffected by Tester\'s corrupt one',
     fs.existsSync(ROLI_STORE) && JSON.parse(fs.readFileSync(ROLI_STORE, 'utf8')).done['z0-say-something'] === true);
