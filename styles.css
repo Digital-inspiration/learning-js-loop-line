@@ -1,0 +1,444 @@
+/* Loop Line — stylesheet for index.html.
+   Plain CSS, no build step: the page links this file directly, so an edit
+   here shows up on the next refresh. Colours are CSS custom properties on
+   :root, so a whole repaint is a handful of lines at the top. */
+
+:root{
+  --paper:#E7EBEC;
+  --card:#FFFFFF;
+  --card-2:#F3F6F6;
+  --ink:#101A1E;
+  --muted:#5B6A70;
+  --line:#CBD5D7;
+  --accent:#10707E;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#D7EAEC;
+  --good:#1C7A4C;
+  --good-soft:#DCEFE4;
+  --bad:#AE3628;
+  --bad-soft:#F6E0DC;
+  --warn:#A96A12;
+  --shadow:0 1px 2px rgba(16,26,30,.06), 0 8px 24px -12px rgba(16,26,30,.18);
+  /* console is a departure board in both themes */
+  --board:#0C1417;
+  --board-line:#1E2E33;
+  --board-text:#E9B44C;
+  --board-dim:#6C8189;
+  --board-bad:#E8776A;
+  --z0:#3A7BD5; --z1:#C2477A; --z2:#2E9E68; --z3:#D98324;
+  --z4:#7B5EA7; --z5:#C0392B; --z6:#167E7B; --z7:#6E7C2F;
+  --z8:#B8860B; --z9:#34568B; --z10:#A65C32;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1317;
+    --card:#141F23;
+    --card-2:#1A272C;
+    --ink:#E3ECEE;
+    --muted:#8B9CA2;
+    --line:#26363C;
+    --accent:#48B9C4;
+    --accent-ink:#062227;
+    --accent-soft:#123239;
+    --good:#5FCB92;
+    --good-soft:#123022;
+    --bad:#F08878;
+    --bad-soft:#3A211E;
+    --warn:#E0A64A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+    --z0:#6FA0E8; --z1:#E0729F; --z2:#4FC28A; --z3:#EFA950;
+    --z4:#A48AD1; --z5:#E4675A; --z6:#3BAFAB; --z7:#A2B15A;
+    --z8:#D9A83F; --z9:#7C9FD1; --z10:#D08A5E;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1317;
+  --card:#141F23;
+  --card-2:#1A272C;
+  --ink:#E3ECEE;
+  --muted:#8B9CA2;
+  --line:#26363C;
+  --accent:#48B9C4;
+  --accent-ink:#062227;
+  --accent-soft:#123239;
+  --good:#5FCB92;
+  --good-soft:#123022;
+  --bad:#F08878;
+  --bad-soft:#3A211E;
+  --warn:#E0A64A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+  --z0:#6FA0E8; --z1:#E0729F; --z2:#4FC28A; --z3:#EFA950;
+  --z4:#A48AD1; --z5:#E4675A; --z6:#3BAFAB; --z7:#A2B15A;
+  --z8:#D9A83F; --z9:#7C9FD1; --z10:#D08A5E;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif;font-weight:800;text-wrap:balance;margin:0;letter-spacing:-.02em}
+code,pre,textarea.editor{font-family:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+
+.eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-family:"Hanken Grotesk",sans-serif;
+}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{
+  max-width:1080px;margin:0 auto;padding:12px 20px;
+  display:flex;align-items:center;gap:16px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.02em}
+.brand .roundel{
+  width:22px;height:22px;border-radius:50%;
+  border:5px solid var(--accent);
+  position:relative;flex:none;
+}
+.brand .roundel::after{
+  content:"";position:absolute;left:-7px;right:-7px;top:50%;height:5px;
+  background:var(--accent);transform:translateY(-50%);
+}
+/* always-visible progress: one tick per stop, in line order */
+.prog{
+  display:flex;align-items:center;gap:10px;
+  background:none;border:1px solid transparent;border-radius:999px;
+  padding:5px 10px 5px 8px;color:var(--muted);
+}
+.prog:hover{border-color:var(--line);color:var(--ink)}
+.prog .back{font-size:15px;line-height:1;margin-right:-3px}
+.ticks{display:flex;gap:2.5px;align-items:center}
+.tick{width:8px;height:14px;border-radius:2px;background:var(--line);flex:none}
+.tick.done{background:var(--tc,var(--accent))}
+.tick.skipped{background:transparent;border:1.5px dashed var(--tc,var(--muted))}
+.tick.here{outline:2px solid var(--ink);outline-offset:2px}
+.progtext{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (max-width:860px){ .ticks{display:none} }
+
+/* Narrow phones. The bar holds four things and has ~360px to do it in, so
+   without this the wordmark wraps to two lines, the star label to three, and
+   the Reset button is clipped off the right edge. Give up the label the stars
+   already say, and keep the wordmark and Reset whole. */
+@media (max-width:640px){
+  .topbar-in{gap:10px;padding:10px 14px}
+  .brand{white-space:nowrap;font-size:15px}
+  .brand .roundel{width:18px;height:18px;border-width:4px}
+  .meter{gap:10px}
+  .meter>span{white-space:nowrap}
+  .starmeter .lbl{display:none}
+  .prog{min-width:0;padding:5px 6px}
+  .ghost{flex:none}
+}
+
+/* jump back into anything left unfinished */
+.revisit{
+  margin-bottom:28px;padding:16px 18px;
+  background:var(--card);border:1px solid var(--line);border-left:4px solid var(--warn);
+  border-radius:12px;box-shadow:var(--shadow);
+}
+.revisit .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rchip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card-2);border:1px solid var(--line);border-radius:10px;
+  padding:8px 12px;font-size:13.5px;font-weight:600;color:var(--ink);
+}
+.rchip:hover{border-color:var(--warn)}
+.rchip.skip{border-style:dashed;border-color:var(--warn)}
+.rchip .why{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rchip.skip .why{color:var(--warn)}
+.tally{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:14px;color:var(--muted)}
+.tally b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+.spacer{flex:1}
+.meter{display:flex;align-items:center;gap:14px;font-size:13px;font-weight:600;color:var(--muted)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+.ghost{
+  background:none;border:1px solid var(--line);color:var(--muted);
+  padding:5px 11px;border-radius:999px;font-size:13px;font-weight:600;
+}
+.ghost:hover{color:var(--ink);border-color:var(--muted)}
+
+/* test mode: off by default, invisible to a learner who never turns it on */
+.devbar{
+  position:sticky;top:52px;z-index:19;
+  background:var(--ink);color:var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.devbar-in{
+  max-width:1080px;margin:0 auto;padding:8px 20px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  font-size:13px;
+}
+.devbar .tag{
+  font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  background:var(--warn);color:#12100C;padding:3px 8px;border-radius:4px;
+}
+.devbar select{
+  font-family:inherit;font-size:13px;font-weight:600;
+  background:var(--card);color:var(--ink);
+  border:1px solid var(--line);border-radius:8px;padding:5px 9px;max-width:280px;
+}
+.devbar .off{
+  margin-left:auto;background:none;border:1px solid var(--muted);color:var(--paper);
+  padding:4px 11px;border-radius:999px;font-size:12px;font-weight:600;
+}
+.devbar .off:hover{background:var(--muted);color:var(--ink)}
+.devbar kbd{
+  font-family:"JetBrains Mono",monospace;font-size:11px;
+  border:1px solid var(--muted);border-radius:4px;padding:1px 5px;
+}
+
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+
+/* ---------- map ---------- */
+.map-head{margin-bottom:36px;max-width:60ch}
+.map-head h1{font-size:clamp(30px,5vw,46px);line-height:1.05;margin-bottom:10px}
+.map-head p{color:var(--muted);margin:0;font-size:17px}
+
+.linemap{position:relative;padding-left:52px}
+.linemap::before{
+  content:"";position:absolute;left:15px;top:14px;bottom:14px;width:6px;border-radius:3px;
+  background:linear-gradient(180deg,var(--z0),var(--z1) 22%,var(--z2) 40%,var(--z3) 58%,var(--line) 72%);
+}
+.station{position:relative;margin-bottom:26px}
+.stn-mark{
+  position:absolute;left:-45px;top:22px;width:20px;height:20px;border-radius:50%;
+  background:var(--card);border:5px solid var(--zc,var(--line));
+  box-shadow:0 0 0 4px var(--paper);
+}
+.station.interchange .stn-mark{width:26px;height:26px;left:-48px;border-width:6px}
+.stn-card{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:18px 20px;box-shadow:var(--shadow);
+  border-left:4px solid var(--zc,var(--line));
+  transition:transform .16s ease, box-shadow .16s ease;
+}
+.station.open .stn-card:hover{transform:translateY(-1px)}
+.station.locked .stn-card{background:transparent;box-shadow:none;border-style:dashed;opacity:.62}
+.stn-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:2px 0 4px}
+.stn-title h3{font-size:20px}
+.stn-card p{margin:0;color:var(--muted);font-size:14.5px;max-width:58ch}
+.stn-teaches{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.tk{
+  font-family:"JetBrains Mono",monospace;font-size:11.5px;
+  background:var(--card-2);border:1px solid var(--line);color:var(--muted);
+  padding:2px 7px;border-radius:5px;
+}
+.stops{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.stop{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card-2);border:1px solid var(--line);
+  border-radius:10px;padding:8px 12px;font-size:13.5px;font-weight:600;color:var(--ink);
+}
+.stop:hover{border-color:var(--zc);background:var(--card)}
+.stop .kind{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  color:var(--zc);
+}
+.stop.done{border-color:color-mix(in srgb,var(--good) 45%, var(--line))}
+.stop.boss{border-width:2px;border-color:var(--zc)}
+.stars{font-size:11px;color:var(--warn);letter-spacing:.5px}
+.lockchip{font-size:12px;font-weight:600;color:var(--muted)}
+
+/* ---------- stage ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:26px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+.panel{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:22px;box-shadow:var(--shadow);
+}
+.brief h2{font-size:25px;margin:6px 0 12px;line-height:1.15}
+.brief p{margin:0 0 12px;font-size:15.5px}
+.brief ul{margin:0 0 12px;padding-left:20px;font-size:15.5px}
+.brief li{margin-bottom:5px}
+.brief code, .inline{
+  background:var(--card-2);border:1px solid var(--line);
+  padding:1px 5px;border-radius:5px;font-size:.88em;
+}
+.reinf{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+.reinf .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+
+pre.code{
+  background:var(--board);border:1px solid var(--board-line);border-radius:10px;
+  color:#D7E3E2;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.6;margin:0 0 14px;
+}
+pre.code .cm{color:var(--board-dim);font-style:italic}
+pre.code .kw{color:#77C6D4}
+pre.code .st{color:#E9B44C}
+pre.code .nm{color:#B9A0E3}
+
+.opt{
+  display:block;width:100%;text-align:left;margin-bottom:9px;
+  background:var(--card-2);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;font-size:14.5px;color:var(--ink);font-weight:500;
+  font-family:"JetBrains Mono",monospace;
+  transition:border-color .12s ease, background .12s ease;
+}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default;opacity:.75}
+.opt.right{border-color:var(--good);background:var(--good-soft);opacity:1}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);opacity:1}
+
+.editor{
+  width:100%;min-height:210px;resize:vertical;
+  background:var(--board);color:#D7E3E2;
+  border:1px solid var(--board-line);border-radius:10px;
+  padding:14px 16px;font-size:13.5px;line-height:1.65;
+  caret-color:var(--board-text);
+}
+.editor:focus{outline:2px solid var(--accent);outline-offset:1px}
+.toolbar{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.btn{
+  background:var(--accent);color:var(--accent-ink);border:none;
+  padding:10px 18px;border-radius:999px;font-weight:700;font-size:14.5px;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn.sec{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:600}
+.btn.sec:hover{color:var(--ink);border-color:var(--muted)}
+
+.board{
+  margin-top:14px;background:var(--board);border:1px solid var(--board-line);
+  border-radius:10px;overflow:hidden;
+}
+.board-head{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-bottom:1px solid var(--board-line);
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--board-dim);
+}
+.board-body{
+  padding:12px 16px;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;
+  color:var(--board-text);min-height:64px;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-word;
+}
+.board-body .empty{color:var(--board-dim);font-style:italic}
+.board-body .err{color:var(--board-bad)}
+
+.verdict{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px;border:1px solid}
+.verdict.pass{background:var(--good-soft);border-color:color-mix(in srgb,var(--good) 50%, transparent);color:var(--ink)}
+.verdict.fail{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 50%, transparent);color:var(--ink)}
+.verdict b{display:block;margin-bottom:3px;font-family:"Bricolage Grotesque",sans-serif}
+.hintbox{margin-top:14px;background:var(--accent-soft);border-radius:10px;padding:13px 15px;font-size:14.5px}
+
+/* live star meter — the thing help actually spends */
+.starmeter{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted)}
+.starmeter .pips{font-size:16px;letter-spacing:2px;line-height:1;color:var(--warn)}
+.starmeter .pips .spent{color:var(--line)}
+.starmeter .lbl{font-weight:600}
+
+/* the help ladder */
+.ladder{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+.ladder .rung{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:var(--card-2);border:1px solid var(--line);border-radius:10px;
+  padding:11px 14px;margin-top:8px;font-size:14px;font-weight:600;color:var(--ink);
+}
+.ladder .rung:hover:not(:disabled){border-color:var(--accent)}
+.ladder .rung:disabled{opacity:.5;cursor:default}
+.ladder .cost{margin-left:auto;font-size:12px;font-weight:700;color:var(--warn);white-space:nowrap}
+.ladder .rung.spent .cost{color:var(--muted)}
+.ladder .rung.offered{
+  border-color:var(--accent);background:var(--accent-soft);
+  animation:nudgepulse 1.6s ease-in-out 3;
+}
+@keyframes nudgepulse{
+  0%,100%{box-shadow:0 0 0 0 transparent}
+  50%{box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent)}
+}
+
+/* free nudge, surfaced automatically on the second miss */
+.nudge{
+  margin-top:12px;border-left:3px solid var(--accent);
+  background:var(--accent-soft);border-radius:0 10px 10px 0;
+  padding:12px 15px;font-size:14.5px;
+}
+.nudge .eyebrow{color:var(--accent);margin-bottom:3px}
+.nudge .cost{float:right;font-size:12px;font-weight:700;color:var(--warn)}
+
+/* anything the game reveals on its own gets a beat of attention */
+.revealed{animation:slidein .35s ease}
+@keyframes slidein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+/* last resort, after every rung is spent */
+.escape{
+  margin-top:14px;border:1px dashed var(--line);border-radius:10px;
+  padding:14px 16px;background:var(--card-2);
+}
+.escape p{margin:0 0 10px;font-size:14px;color:var(--muted)}
+.escape .btn{background:transparent;border:1px solid var(--muted);color:var(--ink);font-weight:600}
+/* save / restore progress */
+/* first run: ask who is playing */
+.welcome{max-width:44rem;margin:6vh auto 0;text-align:left}
+.welcome .eyebrow{margin-bottom:10px}
+.welcome h1{font-size:clamp(28px,5vw,40px);line-height:1.08;margin-bottom:12px}
+.welcome p{color:var(--muted);font-size:16.5px;margin:0 0 22px;max-width:52ch}
+.namerow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.nameinput{
+  flex:1 1 16rem;min-width:0;
+  font-family:inherit;font-size:17px;font-weight:600;
+  background:var(--card);color:var(--ink);
+  border:1px solid var(--line);border-radius:12px;padding:13px 16px;
+}
+.nameinput:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.welcome .fineprint{margin-top:20px;font-size:13.5px;color:var(--muted);max-width:56ch}
+.namewarn{margin-top:10px;font-size:14px;color:var(--bad);font-weight:600}
+.whoami{
+  background:none;border:none;padding:0;margin-left:8px;
+  font:inherit;font-size:13px;font-weight:600;color:var(--muted);
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;
+}
+.whoami:hover{color:var(--ink)}
+
+.savebar{
+  margin-top:30px;padding-top:18px;border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.savebar .lbl{font-size:13px;color:var(--muted);margin-right:4px}
+.savebar button, .savebar label.fake{
+  background:none;border:1px solid var(--line);color:var(--muted);
+  padding:6px 13px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;
+}
+.savebar button:hover, .savebar label.fake:hover{color:var(--ink);border-color:var(--muted)}
+.savenote{
+  margin-top:12px;font-size:13.5px;border-radius:10px;padding:12px 14px;
+  background:var(--card-2);border:1px solid var(--line);
+}
+.savenote.good{background:var(--good-soft);border-color:color-mix(in srgb,var(--good) 45%, transparent)}
+.savenote.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 45%, transparent)}
+.savenote .btn{margin-top:10px;padding:7px 15px;font-size:13.5px}
+.saveblob{
+  width:100%;min-height:90px;margin-top:10px;resize:vertical;
+  font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.5;
+  background:var(--board);color:var(--board-text);
+  border:1px solid var(--board-line);border-radius:8px;padding:10px;
+}
+
+.skipchip{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stop.skipped{border-style:dashed}
+
+/* a worked example in a different context — never the answer */
+.example{margin-top:12px}
+.example .eyebrow{margin-bottom:7px}
+.example pre.code{margin-bottom:8px}
+.example .note{margin:0;padding:0;border:none;font-size:13.5px;color:var(--muted)}
+
+.finish{text-align:center;padding:44px 20px}
+.finish .big{font-size:clamp(28px,5vw,40px);margin-bottom:8px}
+.finish p{color:var(--muted);max-width:46ch;margin:0 auto 22px}
+.starburst{font-size:34px;letter-spacing:6px;color:var(--warn);margin-bottom:12px}
+
+.hidden{display:none !important}
+.note{font-size:13px;color:var(--muted);margin-top:26px;padding-top:16px;border-top:1px solid var(--line);max-width:66ch}
